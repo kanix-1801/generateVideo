@@ -5,3 +5,4 @@ runwayml
 numpy
 pdfplumber
 openai
+python-dotenv

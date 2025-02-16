@@ -6,8 +6,11 @@ from runwayml import RunwayML
 from endpoints.generate_prompt import generate_prompts
 from endpoints.merge_videos import merge_videos
 from openai import AzureOpenAI, OpenAI
-client = OpenAI(api_key=os.environ.get("openai_key"))
-client_runway = RunwayML(api_key=os.environ.get("runway_key"))
+from dotenv import load_dotenv
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("openai_key"))
+client_runway = RunwayML(api_key=os.getenv("runway_key"))
 
 
 def generate_audio(voiceover, voice, language):
