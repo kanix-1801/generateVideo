@@ -34,7 +34,7 @@ const VideoSetting = ({ setCurrentStep }) => {
                             <option style={{
                                 backgroundColor: '#000927'
                             }}
-                                value="hd">HD</option>
+                                value="hd">720p</option>
                         </select>
                     </div>
 
@@ -48,8 +48,6 @@ const VideoSetting = ({ setCurrentStep }) => {
                             <option style={{
                                 backgroundColor: '#000927'
                             }} value="mp4">MP4</option>
-                            {/* <option value="mov">MOV</option>
-                            <option value="avi">AVI</option> */}
                         </select>
                     </div>
                 </div>
