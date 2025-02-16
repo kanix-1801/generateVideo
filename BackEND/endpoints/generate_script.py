@@ -10,10 +10,10 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("openai_key"))
 
 def extract_text_from_pdf(pdf_path):
-    response = requests.get(pdf_path)
-    response.raise_for_status()
+    # response = requests.get(pdf_path)
+    # response.raise_for_status()
     text = ""
-    with pdfplumber.open(BytesIO(response.content)) as pdf:
+    with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
             text += page.extract_text() + "\n\n"
     return text
