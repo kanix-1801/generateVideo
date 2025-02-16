@@ -5,8 +5,8 @@ from runwayml import RunwayML
 from endpoints.generate_prompt import generate_prompts
 from endpoints.merge_videos import merge_videos
 from openai import AzureOpenAI, OpenAI
-client = OpenAI(api_key="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")
-client_runway = RunwayML(api_key="key_f8b7721933a2bba93814542a20776920ef02f83b1a9b1cf377eb859b35cc152763f33deb49165e3b98faab23b2602ebddc39496ed3afc34f6445029518adb67d")
+client = OpenAI(api_key="sk-xxx")
+client_runway = RunwayML(api_key="key_xxx")
 
 
 def generate_audio(voiceover, voice, language):

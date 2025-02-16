@@ -4,7 +4,7 @@ import os
 import json
 from io import BytesIO
 from openai import AzureOpenAI, OpenAI
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="sk-xxx")
 
 def extract_text_from_pdf(pdf_path):
     response = requests.get(pdf_path)
