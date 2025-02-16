@@ -9,6 +9,7 @@ const VideoSetting = ({ setCurrentStep }) => {
     const VideoSettingHandler = () => {
 
         // call api and generate video
+
         const chipsCount = 3;
         if (chipsCount > 1) {
             // send the chips to next one

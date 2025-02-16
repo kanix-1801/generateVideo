@@ -6,6 +6,7 @@ import CombineClips from "./components/CombineClips";
 
 const App = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [script, setScript] = useState("");
   const steps = [
     { label: 'Enter File Or Write Script' },
     { label: 'Video And Audio Setting' },
@@ -25,6 +26,7 @@ const App = () => {
       {currentStep === 1 && (<>
         <ScriptInput
           setCurrentStep={setCurrentStep}
+          setScript={setScript}
         />
       </>)}
       {currentStep === 2 && (<><VideoSetting setCurrentStep={setCurrentStep} /></>)}

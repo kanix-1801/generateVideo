@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { IoMdCloudUpload } from "react-icons/io";
+import axios from 'axios';
 
-const ScriptInput = ({ setCurrentStep }) => {
+const ScriptInput = ({ setCurrentStep, setScript }) => {
   const [activeToggle, setActiveToggle] = React.useState("docs");
   const [isDragging, setIsDragging] = React.useState(false);
   const [files, setFiles] = useState([]);
   const [input, setInput] = useState("");
-  const [script, setScript] = useState("");
-  // image
-  // const [image, setImage] = useState([]);
+  const [localScript, setlocalScript] = useState("");
 
-  // const [docFiles, setDocFiles] = useState([]);
+  // image
   const [imgFiles, setImgFiles] = useState([]);
   // const [isDraggingDoc, setIsDraggingDoc] = useState(false);
   const [isDraggingImg, setIsDraggingImg] = useState(false);
@@ -57,27 +56,52 @@ const ScriptInput = ({ setCurrentStep }) => {
     setImgFiles([...imgFiles, ...event.target.files]);
   };
 
+  // get script from the user
+  const handleScriptGenerate = async () => {
+    if (activeToggle === "docs" && files.length === 0 && input.trim() === "") {
+      // if(files.length === 0 && ) alert("Please upload at least one document");
+      // if (files.length === 0) alert("Please upload at least one document");
+      // if (input.trim() === "") alert("Please enter the instructions");
+      // alert('Please upload at least one document and enter the instructions');
+      console.log("Please upload at least one document");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("instructions", input);
+    files.forEach((file) => {
+      formData.append("file", file);
+    });
+    // call api and get the script and set it to the script state
+    try {
+      const response = await axios.post("http://localhost:5000/api/generate-script", formData
+        // ,{
+        //   headers: {
+        //     "Content-Type": "multipart/form-data",
+        //     Authorization: `Bearer ${process.env.REACT_APP_API_KEY}`, // Add your API key here
+        //   },
+        // }
+      );
+      setlocalScript(response.data.script); // set the script to the state
+      setActiveToggle("script");
+    } catch (err) {
+      console.log(err);
+      alert("An error occurred. Please try again later");
+    }
+  };
+
+  // sand the script to the next step
   const handleGenerate = () => {
     if (activeToggle === "script" && !script.trim()) {
       alert("Please enter a script");
       return;
     }
-    
+
+    setScript(localScript);
 
     // there i pass the script to the next step and also change the setcurrent step to 2
     setCurrentStep(2);
   };
-  const handleScriptGenerate = () => {
-    if (activeToggle === "docs" && files.length === 0 && input.trim() === "") {
-      if (files.length === 0) alert("Please upload at least one document");
-      if (input.trim() === "") alert("Please enter the instructions");
-      // alert('Please upload at least one document and enter the instructions');
-      console.log("Please upload at least one document");
-      return;
-    }
-    // call api and get the script and set it to the script state
-    setActiveToggle("script");
-  };
+
   const calculateVideoLength = (text) => {
     const characters = text.length;
     const totalSeconds = Math.floor(characters / 15); // Assuming 15 characters per second
@@ -146,9 +170,8 @@ const ScriptInput = ({ setCurrentStep }) => {
                   {/* </span> */}
                   <label htmlFor="upload-doc" className="upload-label">
                     {files.length > 0
-                      ? `Uploaded ${files.length} file${
-                          files.length > 1 ? "s" : ""
-                        }`
+                      ? `Uploaded ${files.length} file${files.length > 1 ? "s" : ""
+                      }`
                       : "Drag and drop documents here, or browse"}
                   </label>
                   <div className="file-list">
@@ -159,15 +182,14 @@ const ScriptInput = ({ setCurrentStep }) => {
                     ))}
                   </div>
                   <p className="upload-hint">
-                    Supported formats: PDF, DOCX, PPTX
+                    Supported formats: PDF, DOCX
                   </p>
                 </div>
 
                 {/* Image Upload Section */}
                 <div
-                  className={`upload-container ${
-                    isDraggingImg ? "dragging" : ""
-                  }`}
+                  className={`upload-container ${isDraggingImg ? "dragging" : ""
+                    }`}
                   onDragOver={handleDragOverImg}
                   onDragLeave={handleDragLeaveImg}
                   onDrop={handleDropImg}
@@ -183,9 +205,8 @@ const ScriptInput = ({ setCurrentStep }) => {
                   <IoMdCloudUpload size={60} color="#FF5733" />
                   <label htmlFor="upload-img" className="upload-label">
                     {imgFiles.length > 0
-                      ? `Uploaded ${imgFiles.length} image${
-                          imgFiles.length > 1 ? "s" : ""
-                        }`
+                      ? `Uploaded ${imgFiles.length} image${imgFiles.length > 1 ? "s" : ""
+                      }`
                       : "Drag and drop reference images here, or browse"}
                   </label>
                   <div className="file-list">
@@ -216,19 +237,19 @@ const ScriptInput = ({ setCurrentStep }) => {
             <div>
               <h1 className="input-containers-heading">Script Editor</h1>
               <textarea
-                value={script}
-                onChange={(e) => setScript(e.target.value)}
+                value={localScript}
+                onChange={(e) => setlocalScript(e.target.value)}
                 placeholder="Your script will appear here..."
                 className="script-textarea"
               />
               <div className="script-info-container">
                 <span className="character-count">
-                  Characters: {script.length}/5000
+                  Characters: {localScript.length}/5000
                 </span>
                 <span className="video-length">
-                  Estimated video length: {calculateVideoLength(script)}
+                  Estimated video length: {calculateVideoLength(localScript)}
                 </span>
-                    
+
               </div>
               <button className="generate-button" onClick={handleGenerate}>
                 submit script
