@@ -12,8 +12,30 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("openai_key"))
 client_runway = RunwayML(api_key=os.getenv("runway_key"))
 
+def translate_voiceover(text_list, language):
+    transalted_text_list=[]
+    for text in text_list:
+        messages=[
+            {
+                "role": "system",
+                "content": f"""Read the given sentence and translate it to {language} language ,\nOnly output in {language} language"""
+            },
+            {
+                "role": "system",
+                "content": text
+            }
+        ]
+        response = client.chat.completions.create(
+                            model="gpt-4o-mini",
+                            messages=messages,
+                            temperature=0.7,
+                            n=1)
+        transalted_text_list.append(response.choices[0].message.content)
+    return transalted_text_list
 
 def generate_audio(voiceover, voice, language):
+    if language.lower!="english":
+        voiceover=translate_voiceover(voiceover, language)
     voice_models={"male": "alloy",
                   "female": "onyx"}
     selected_voice=voice_models.get(voice, "onyx")
