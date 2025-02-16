@@ -91,7 +91,7 @@ const ScriptInput = ({ setCurrentStep, setScript }) => {
 
   // sand the script to the next step
   const handleGenerate = () => {
-    if (activeToggle === "script" && !script.trim()) {
+    if (activeToggle === "script" && !localScript.trim()) {
       alert("Please enter a script");
       return;
     }

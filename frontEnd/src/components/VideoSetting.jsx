@@ -1,21 +1,43 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const VideoSetting = ({ setCurrentStep }) => {
+const VideoSetting = ({ setCurrentStep, script }) => {
     const [quality, setQuality] = useState('hd');
     const [format, setFormat] = useState('mp4');
     const [language, setLanguage] = useState('english');
     const [voice, setVoice] = useState('male');
 
-    const VideoSettingHandler = () => {
+    const VideoSettingHandler = async () => {
+
+        const formData = new FormData();
+        formData.append("script", script);
+        formData.append("voice", language);
+        formData.append("language", voice);
 
         // call api and generate video
+        const response = await axios.post(
+            `local/generate-video`,
+            formData
+            // , {
+            //     headers: {
+            //         "Content-Type": "multipart/form-data",
+            //         Authorization: `Bearer ${process.env.REACT_APP_API_KEY}`,
+            //     },
+            // }
+        );
 
-        const chipsCount = 3;
-        if (chipsCount > 1) {
-            // send the chips to next one
+        console.log("Video Generation Response:", response.data);
+
+        if (response.data && response.data.videos) {
+            const { Merged_Video, Video_list } = response.data.videos;
+            console.log("Merged Video:", Merged_Video);
+            console.log("Video List:", Video_list);
+        }
+
+        const clipsCount = response.data.videos?.Video_list?.length || 1;
+        if (clipsCount > 1) {
             setCurrentStep(3);
         } else {
-            // first get the video and then send it to the next one
             setCurrentStep(4);
         }
     }

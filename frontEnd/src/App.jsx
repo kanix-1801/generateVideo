@@ -29,7 +29,7 @@ const App = () => {
           setScript={setScript}
         />
       </>)}
-      {currentStep === 2 && (<><VideoSetting setCurrentStep={setCurrentStep} /></>)}
+      {currentStep === 2 && (<><VideoSetting setCurrentStep={setCurrentStep} script={script} /></>)}
       {currentStep === 3 && (<><CombineClips setCurrentStep={setCurrentStep} /></>)}
       {currentStep === 4 && (<div>Step 4</div>)}
     </div>
