@@ -35,7 +35,7 @@ function_specs={
             ]
           },
           "minItems": 1,
-          "maxItems": 2
+          "maxItems": 10
         }
       },
       "required": [
