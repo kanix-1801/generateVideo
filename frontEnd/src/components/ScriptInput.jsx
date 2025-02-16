@@ -62,6 +62,7 @@ const ScriptInput = ({ setCurrentStep }) => {
       alert("Please enter a script");
       return;
     }
+    
 
     // there i pass the script to the next step and also change the setcurrent step to 2
     setCurrentStep(2);
