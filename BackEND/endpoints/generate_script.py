@@ -4,7 +4,10 @@ import os
 import json
 from io import BytesIO
 from openai import AzureOpenAI, OpenAI
-client = OpenAI(api_key=os.environ.get("openai_key"))
+from dotenv import load_dotenv
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("openai_key"))
 
 def extract_text_from_pdf(pdf_path):
     response = requests.get(pdf_path)
