@@ -1,6 +1,7 @@
 import json
+import os
 from openai import AzureOpenAI, OpenAI
-client = OpenAI(api_key="sk-xxx")
+client = OpenAI(api_key=os.environ.get("openai_key"))
 
 
 
