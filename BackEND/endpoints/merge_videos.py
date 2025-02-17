@@ -5,7 +5,7 @@ from moviepy.audio.AudioClip import AudioArrayClip
 
 def merge_audio_video(speech_files, video_files):
     merged_files = []
-
+    response_files=[]
     for segment_number, (audio_path, video_path) in enumerate(zip(speech_files, video_files), start=1):
         # Load clips
         video_clip = VideoFileClip(video_path)
@@ -28,7 +28,8 @@ def merge_audio_video(speech_files, video_files):
         video_with_audio = video_clip.set_audio(final_audio)
 
         # Write the merged output
-        output_filename = f"../Storage/Audio_Video/merged_video_{segment_number}.mp4"
+        output_filename = f"../frontEnd/Public/Storage/Audio_Video/merged_video_{segment_number}.mp4"
+        response_filename = f"../Public/Storage/Audio_Video/merged_video_{segment_number}.mp4"
         video_with_audio.write_videofile(output_filename, codec="libx264", audio_codec="aac")
 
         # Close resources
@@ -37,10 +38,11 @@ def merge_audio_video(speech_files, video_files):
 
         # Store the final merged file path
         merged_files.append(output_filename)
+        response_files.append(response_filename)
         print(f"Merged segment {segment_number} saved as {output_filename}")
 
     print("All merged video files:", merged_files)
-    return merged_files
+    return merged_files, response_files
 
 def merge_final_videos(merged_files):
     loaded_files = [VideoFileClip(video) for video in merged_files]
@@ -49,15 +51,16 @@ def merge_final_videos(merged_files):
     final_video = concatenate_videoclips(loaded_files, method="compose")
 
     # Write the final concatenated video to a file.
-    final_video_path="../Storage/Final_Video/video_final.mp4"
+    final_video_path="../frontEnd/Public/Storage/Final_video/video_final.mp4"
+    response_video_path="../Public/Storage/Final_video/video_final.mp4"
     final_video.write_videofile(final_video_path, codec="libx264", audio_codec="aac")
 
     # Optionally, close each clip to free resources.
     for clip in loaded_files:
         clip.close()
-    return final_video_path
+    return final_video_path, response_video_path
 
 def merge_videos(speech_files, video_files):
-    merged_files=merge_audio_video(speech_files, video_files)
-    final_video_path=merge_final_videos(merged_files)
-    return {"Video_list": merged_files, "Merged_Video": final_video_path}
+    merged_files, response_files=merge_audio_video(speech_files, video_files)
+    final_video_path, response_video_path=merge_final_videos(merged_files)
+    return {"Video_list": response_files, "Merged_Video": response_video_path}

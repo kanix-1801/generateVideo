@@ -6,3 +6,4 @@ numpy
 pdfplumber
 openai
 python-dotenv
+Flask-CORS

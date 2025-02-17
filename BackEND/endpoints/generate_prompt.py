@@ -102,5 +102,6 @@ def generate_prompts(script):
     for full_prompt in full_prompt_list:
         prompts.append(full_prompt['prompt'])
         audio.append(full_prompt['voiceover'])
+    print(prompts)
     return prompts, audio
 

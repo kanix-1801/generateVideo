@@ -3,10 +3,15 @@ import VideoGenerationHeader from "./components/VideoGenerationHeader";
 import ScriptInput from "./components/ScriptInput";
 import VideoSetting from "./components/VideoSetting";
 import CombineClips from "./components/CombineClips";
+import PreviewAndDownload from "./components/PreviewAndDownload";
 
 const App = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [script, setScript] = useState("");
+  const [VideoList , setVideolist] = useState([]);
+  const [MergedVideo , setMergedVideo] = useState("");
+  const [ImgFile , setImgFile] = useState("");
+
   const steps = [
     { label: 'Enter File Or Write Script' },
     { label: 'Video And Audio Setting' },
@@ -27,11 +32,19 @@ const App = () => {
         <ScriptInput
           setCurrentStep={setCurrentStep}
           setScript={setScript}
+          setImgFile={setImgFile}
         />
       </>)}
-      {currentStep === 2 && (<><VideoSetting setCurrentStep={setCurrentStep} script={script} /></>)}
-      {currentStep === 3 && (<><CombineClips setCurrentStep={setCurrentStep} /></>)}
-      {currentStep === 4 && (<div>Step 4</div>)}
+      {currentStep === 2 && (<>
+      <VideoSetting setCurrentStep={setCurrentStep}
+      script={script}
+      setVideolist={setVideolist}
+      setMergedVideo={setMergedVideo}
+      ImgFile = {ImgFile}
+      />
+      </>)}
+      {currentStep === 3 && (<><CombineClips setCurrentStep={setCurrentStep} VideoList={VideoList}/></>)}
+      {currentStep === 4 && (<><PreviewAndDownload MergedVideo={MergedVideo}/></>)}
     </div>
   </>
   );

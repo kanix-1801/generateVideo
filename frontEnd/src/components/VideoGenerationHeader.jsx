@@ -1,4 +1,5 @@
 import React from 'react';
+import { IoMdArrowRoundBack } from "react-icons/io";
 // import { FaArrowLeft } from 'react-icons/fa'; // Import back arrow icon
 
 const VideoGenerationHeader = ({ currentStep, setCurrentStep, steps, progressWidth }) => {
@@ -11,7 +12,7 @@ const VideoGenerationHeader = ({ currentStep, setCurrentStep, steps, progressWid
                         onClick={() => setCurrentStep(currentStep - 1)}
                     >
                         {/* <FaArrowLeft className="back-icon" /> */}
-                        back
+                       <IoMdArrowRoundBack style={{ color: "white", background: "transparent" , padding: 0 , border: 0 }} size={30} />
                     </button>
                 )}
                 <h1 className="heading">Generate Video</h1>

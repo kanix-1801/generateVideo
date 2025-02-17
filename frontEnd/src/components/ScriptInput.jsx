@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { IoMdCloudUpload } from "react-icons/io";
 import axios from 'axios';
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
-const ScriptInput = ({ setCurrentStep, setScript }) => {
+const ScriptInput = ({ setCurrentStep, setScript , setImgFile }) => {
   const [activeToggle, setActiveToggle] = React.useState("docs");
   const [isDragging, setIsDragging] = React.useState(false);
   const [files, setFiles] = useState([]);
   const [input, setInput] = useState("");
   const [localScript, setlocalScript] = useState("");
-
+  const [loading, setLoading] = useState(false);
   // image
   const [imgFiles, setImgFiles] = useState([]);
   // const [isDraggingDoc, setIsDraggingDoc] = useState(false);
@@ -58,36 +60,55 @@ const ScriptInput = ({ setCurrentStep, setScript }) => {
 
   // get script from the user
   const handleScriptGenerate = async () => {
-    if (activeToggle === "docs" && files.length === 0 && input.trim() === "") {
-      // if(files.length === 0 && ) alert("Please upload at least one document");
-      // if (files.length === 0) alert("Please upload at least one document");
-      // if (input.trim() === "") alert("Please enter the instructions");
-      // alert('Please upload at least one document and enter the instructions');
-      console.log("Please upload at least one document");
-      return;
-    }
+    // if (activeToggle === "docs" && files.length === 0 && input.trim() === "") {
+    //   console.log("Please upload at least one document or provide instructions");
+    //   return;
+    // }
+    setLoading(true);
+    console.log("Files:", files);
     const formData = new FormData();
-    formData.append("instructions", input);
-    files.forEach((file) => {
-      formData.append("file", file);
+    formData.append("data", JSON.stringify({ "endpoint": "generate_script", "event": { "instructions": input}}));
+    // formData.append("instructions", input);
+  if (files[0]) {
+    formData.append("file", files[0]);
+  }
+  console.log("Form Data:", formData);
+  console.log("Files:", files);
+
+  try {
+    console.log("Sending request...");
+    const response = await axios.post("http://127.0.0.1:5000/generate", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    // call api and get the script and set it to the script state
-    try {
-      const response = await axios.post("http://localhost:5000/api/generate-script", formData
-        // ,{
-        //   headers: {
-        //     "Content-Type": "multipart/form-data",
-        //     Authorization: `Bearer ${process.env.REACT_APP_API_KEY}`, // Add your API key here
-        //   },
-        // }
-      );
-      setlocalScript(response.data.script); // set the script to the state
-      setActiveToggle("script");
-    } catch (err) {
-      console.log(err);
-      alert("An error occurred. Please try again later");
+    console.log("Response:", response.data);
+    setImgFile(imgFiles[0]);
+    setlocalScript(response.data.response);
+    console.log("Response:", response.data.response);
+    setActiveToggle("script");
+  }
+
+    // const payload = {
+    //   endpoint: "generate_script",
+    //   event: {
+    //     instructions: input,
+    //     pdf_path: files[0],
+    //   },
+    // };
+
+    // try {
+    //   const response = await axios.post("http://127.0.0.1:5000/generate", payload, {
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    //   setlocalScript(response.data.response);
+    //   console.log("Response:", response.data);
+    //   setActiveToggle("script");
+    // }
+     catch (error) {
+      console.error("Error:", error);
     }
+    setLoading(false);
   };
+  
 
   // sand the script to the next step
   const handleGenerate = () => {
@@ -97,14 +118,12 @@ const ScriptInput = ({ setCurrentStep, setScript }) => {
     }
 
     setScript(localScript);
-
-    // there i pass the script to the next step and also change the setcurrent step to 2
     setCurrentStep(2);
   };
 
   const calculateVideoLength = (text) => {
     const characters = text.length;
-    const totalSeconds = Math.floor(characters / 15); // Assuming 15 characters per second
+    const totalSeconds = Math.floor(characters / 40); // Assuming 15 characters per second
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
@@ -182,7 +201,7 @@ const ScriptInput = ({ setCurrentStep, setScript }) => {
                     ))}
                   </div>
                   <p className="upload-hint">
-                    Supported formats: PDF, DOCX
+                    Supported formats: PDF
                   </p>
                 </div>
 
@@ -232,6 +251,11 @@ const ScriptInput = ({ setCurrentStep, setScript }) => {
               >
                 Generate Script
               </button>
+              {loading &&
+            <div className="loader_div">
+              <div className="loader"></div>
+              </div>
+            }
             </div>
           ) : (
             <div>
@@ -251,6 +275,7 @@ const ScriptInput = ({ setCurrentStep, setScript }) => {
                 </span>
 
               </div>
+
               <button className="generate-button" onClick={handleGenerate}>
                 submit script
               </button>

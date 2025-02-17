@@ -1,45 +1,64 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const VideoSetting = ({ setCurrentStep, script }) => {
+const VideoSetting = ({ setCurrentStep, script, setVideolist, setMergedVideo, ImgFile }) => {
     const [quality, setQuality] = useState('hd');
     const [format, setFormat] = useState('mp4');
-    const [language, setLanguage] = useState('english');
+    const [language, setLanguage] = useState('English');
     const [voice, setVoice] = useState('male');
+    const [loading, setLoading] = useState(false);
+    // const [Video_list , setVideo_list] = useState([]);
+//   const [Merged_Video , setMerged_Video] = useState("");
 
     const VideoSettingHandler = async () => {
-
+        console.log("Video Setting Handler");
+        // setVideolist([
+        //     { id: 1, videoUrl: "Recording 2025-02-01 090617.mp4" },
+        //     { id: 2, videoUrl: "Recording 2025-02-01 090617.mp4" },
+        // ]);
+        // setMergedVideo("Recording 2025-02-01 090617.mp4");
+        // setCurrentStep(4);
+        setLoading(true);
+        const payload = {
+            endpoint: "generate_video",
+            event: {
+                script: script,
+                voice : voice,
+                language : language,
+            },
+          };
+          console.log("Payload:", payload);
+          console.log("ImgFile:", ImgFile);
         const formData = new FormData();
-        formData.append("script", script);
-        formData.append("voice", language);
-        formData.append("language", voice);
+        formData.append("data", JSON.stringify(payload));
+        formData.append("file", ImgFile);
+        console.log("Form Data:", formData);
+        
+          try {
+            const response = await axios.post("http://127.0.0.1:5000/generate", formData, {
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+            console.log("Response:", response);
+            // (response.data.response);
+            const Video_list = response.data.response.Video_list;
+            const Merged_Video = response.data.response.Merged_Video;
+            setVideolist(Video_list);
+           
+            setMergedVideo(Merged_Video);
+            console.log("Response:", response.data);
 
-        // call api and generate video
-        const response = await axios.post(
-            `local/generate-video`,
-            formData
-            // , {
-            //     headers: {
-            //         "Content-Type": "multipart/form-data",
-            //         Authorization: `Bearer ${process.env.REACT_APP_API_KEY}`,
-            //     },
-            // }
-        );
+            if (Video_list.length > 1) {
+                setCurrentStep(3);
+            } else {
+                setCurrentStep(4);
+            }
+            // console.log("Merged Video:", Merged_Video);
+            // console.log("Video List:", Video_list);
 
-        console.log("Video Generation Response:", response.data);
-
-        if (response.data && response.data.videos) {
-            const { Merged_Video, Video_list } = response.data.videos;
-            console.log("Merged Video:", Merged_Video);
-            console.log("Video List:", Video_list);
-        }
-
-        const clipsCount = response.data.videos?.Video_list?.length || 1;
-        if (clipsCount > 1) {
-            setCurrentStep(3);
-        } else {
-            setCurrentStep(4);
-        }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+          setLoading(false);
     }
 
     return (<>
@@ -89,11 +108,10 @@ const VideoSetting = ({ setCurrentStep, script }) => {
                         >
                             <option style={{
                                 backgroundColor: '#000927'
-                            }} value="english">English</option>
+                            }} value="English">English</option>
                             <option style={{
                                 backgroundColor: '#000927'
-                            }} value="spanish">Hindi</option>
-                            {/* <option value="french">French</option> */}
+                            }} value="Hindi">Hindi</option>
                         </select>
                     </div>
 
@@ -119,6 +137,11 @@ const VideoSetting = ({ setCurrentStep, script }) => {
             <button onClick={VideoSettingHandler} className="generate-button">
                 Generate Video
             </button>
+            {loading &&
+            <div className="loader_div">
+              <div className="loader"></div>
+              </div>
+            }
         </div >
     </>)
 }
